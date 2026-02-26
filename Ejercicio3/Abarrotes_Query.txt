@@ -1,0 +1,122 @@
+CREATE TABLE Producto(
+    id_producto INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT,
+    detalle TEXT
+    );
+
+CREATE TABLE Empleado(
+    id_empleado INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT,
+    direccion TEXT,
+    telefono TEXT,
+    email TEXT
+    )
+
+CREATE TABLE Cliente(
+    id_empleado INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT,
+    telefono TEXT,
+    email TEXT
+    )
+
+CREATE TABLE Proveedor(
+    id_proveedor INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT,
+    empresa TEXT,
+    telefono TEXT,
+    email TEXT
+    )
+
+CREATE TABLE Compras(
+    id_producto INTEGER,
+    id_proveedor INTEGER,
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
+    FOREIGN KEY (id_proveedor) REFERENCES Proveedor(id_proveedor)    
+    )
+
+DROP TABLE Cliente;
+
+CREATE TABLE Cliente (
+    id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre     TEXT,
+    telefono   TEXT,
+    email      TEXT
+);
+
+CREATE TABLE Ventas (
+    id_producto INTEGER,
+    id_cliente INTEGER,
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
+    FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente)
+)
+
+CREATE TABLE Categoria (
+    id_categoria INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT,
+    detalle TEXT
+)
+
+CREATE TABLE Area (
+    id_producto INTEGER,
+    id_categoria INTEGER,
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
+    FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria)
+)
+
+ALTER TABLE Producto ADD COLUMN stock INTEGER;
+
+ALTER TABLE Producto ADD COLUMN precio INTEGER
+
+PRAGMA foreign_keys = OFF;
+
+BEGIN;
+
+ALTER TABLE AREA RENAME TO AREA_OLD;
+ALTER TABLE CATEGORIA RENAME TO CATEGORIA_OLD;
+ALTER TABLE CLIENTE RENAME TO CLIENTE_OLD;
+ALTER TABLE COMPRAS RENAME TO COMPRAS_OLD;
+
+ALTER TABLE EMPLEADO RENAME TO EMPLEADO_OLD;
+ALTER TABLE PRODUCTO RENAME TO PRODUCTO_OLD;
+ALTER TABLE PROVEEDOR RENAME TO PROVEEDOR_OLD;
+ALTER TABLE VENTAS RENAME TO VENTAS_OLD;
+
+CREATE TABLE Empleado (
+  Id            INTEGER PRIMARY KEY,
+  Nombre        TEXT NOT NULL,
+  Direccion  TEXT,
+  Telefono  TEXT,
+  CREATED_AT    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UPDATED_AT    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
+
+CREATE INDEX idx_empleado_nombre ON Empleado (Nombre);
+
+CREATE TRIGGER trg_empleado_updated_at
+AFTER UPDATE ON Empleado
+FOR EACH ROW
+BEGIN
+  UPDATE Empleado
+  SET UPDATED_AT = CURRENT_TIMESTAMP
+  WHERE Id = New.Id;
+END;
+
+CREATE TABLE Proveedor (
+  Id          INTEGER PRIMARY KEY,
+  Nombre      TEXT NOT NULL,
+  Empresa   TEXT,
+  Telefono    TEXT,
+  Email       TEXT,
+  CREATED_AT  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UPDATED_AT  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (Nombre)
+)
+
+CREATE TRIGGER trg_proveedor_updated_at
+AFTER UPDATE ON Proveedor
+FOR EACH ROW
+BEGIN
+  UPDATE Proveedor
+  SET UPDATED_AT = CURRENT_TIMESTAMP
+  WHERE ID = New.Id;
+END;

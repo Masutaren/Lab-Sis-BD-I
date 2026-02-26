@@ -1,0 +1,251 @@
+BEGIN TRANSACTION
+
+
+INSERT INTO AUTOR (NOMBRE, NACIONALIDAD, BIBLIOGRAFIA)
+VALUES
+('Isabel Allende', 'Chilena', 'Autor de La casa de los espíritus'),
+('Fyodor Dostoevsky', 'Rusa', 'Autor de Los hermanos Karamazov'),
+('Julio Cortázar', 'Argentina', 'Autor de Rayuela'),
+('Carlos Ruiz Zafón', 'Española', 'Autor de La sombra del viento');
+
+
+INSERT INTO EDITORIAL (NOMBRE, DIRECCION, TELEFONO, EMAIL)
+VALUES
+('Editorial Rabioola', 'Ciudad de México', '5511345011', 'editorial@rabioola.com'),
+('Editorial Alfaguara', 'Zacatecas', '3488881111', 'editorial@alfaguara.com'),
+('Editorial Studios', 'Guadalajara', '5411116780', 'editorial@guadalajara.com');
+
+
+INSERT INTO LIBRO (TITULO,ISBN,GENERO,IDIOMA,PAGINAS,FECHA_PUBLICACION,DESCRIPCION)VALUES
+('Rayuela','9788437604947','Novela','Español',600,'1963-06-28','Horacio es un intelectual argentino que vive en París, donde entabla una relación intensa pero asimétrica con La Maga (Lucía), una mujer uruguaya de temperamento apasionado.'),
+('La sombra del viento','9788408172177','Misterio','Español',576,'2001-04-12','Un joven Daniel Sempere es llevado por su padre a un lugar secreto: el Cementerio de los Libros Olvidados, un misterioso lugar donde se custodian libros que han sido olvidados por el mundo.'),
+('La casa de los espíritus', '9788401341588', 'Realismo Mágico', 'Español', 448, '1982-10-01', 'Crónica familiar de los Trueba en Chile, donde se mezclan pasiones, política y elementos espirituales a lo largo de tres generaciones.'),
+('Largo pétalo de mar', '9788466353274', 'Novela Histórica', 'Español', 384, '2019-05-21', 'Sigue a Víctor y Roser, exiliados de la Guerra Civil Española, en su viaje hacia la libertad en Chile a bordo del Winnipeg.'),
+('Crimen y castigo', '9788467046526', 'Novela Psicológica', 'Ruso', 608, '1866-01-01', 'Relato sobre Rodión Raskólnikov y su dilema moral tras cometer un asesinato, explorando la culpa, la redención y la justicia.'),
+('Los hermanos Karamazov', '9788491051510', 'Novela Filosófica', 'Ruso', 1120, '1880-11-01', 'Compleja trama sobre un parricidio que sirve para debatir sobre la existencia de Dios, el libre albedrío y la moralidad humana.');
+
+
+INSERT INTO LIBRO_AUTOR (LIBRO_ID, AUTOR_ID)
+
+SELECT L.ID, A.ID
+FROM LIBRO L, AUTOR A
+WHERE L.TITULO='La casa de los espíritus'
+AND A.NOMBRE='Isabel Allende';
+
+INSERT INTO LIBRO_AUTOR (LIBRO_ID, AUTOR_ID)
+
+SELECT L.ID, A.ID
+FROM LIBRO L, AUTOR A
+WHERE L.TITULO='Largo pétalo de mar'
+AND A.NOMBRE='Isabel Allende';
+
+
+INSERT INTO LIBRO_AUTOR (LIBRO_ID, AUTOR_ID)
+
+SELECT L.ID, A.ID
+FROM LIBRO L, AUTOR A
+WHERE L.TITULO='Rayuela'
+AND A.NOMBRE='Julio Cortázar';
+
+
+INSERT INTO LIBRO_AUTOR (LIBRO_ID, AUTOR_ID)
+
+SELECT L.ID, A.ID
+FROM LIBRO L, AUTOR A
+WHERE L.TITULO='Crimen y castigo'
+AND A.NOMBRE='Fyodor Dostoevsky';
+
+
+INSERT INTO LIBRO_AUTOR (LIBRO_ID, AUTOR_ID)
+
+SELECT L.ID, A.ID
+FROM LIBRO L, AUTOR A
+WHERE L.TITULO='Los hermanos Karamazov'
+AND A.NOMBRE='Fyodor Dostoevsky';
+
+
+INSERT INTO LIBRO_AUTOR (LIBRO_ID, AUTOR_ID)
+
+SELECT L.ID, A.ID
+FROM LIBRO L, AUTOR A
+WHERE L.TITULO='La sombra del viento'
+AND A.NOMBRE='Carlos Ruiz Zafón';
+
+
+INSERT INTO EDICION (
+LIBRO_ID,
+EDITORIAL_ID,
+NUM_EDICION,
+FECHA_LANZAMIENTO
+)
+
+SELECT L.ID, E.ID, 1, L.FECHA_PUBLICACION
+
+FROM LIBRO L, EDITORIAL E
+
+WHERE L.TITULO='La casa de los espíritus'
+AND E.NOMBRE='Editorial Rabioola';
+
+
+
+INSERT INTO EDICION (
+LIBRO_ID,
+EDITORIAL_ID,
+NUM_EDICION,
+FECHA_LANZAMIENTO
+)
+
+SELECT L.ID, E.ID, 1, L.FECHA_PUBLICACION
+
+FROM LIBRO L, EDITORIAL E
+
+WHERE L.TITULO='Rayuela'
+AND E.NOMBRE='Editorial Alfaguara';
+
+
+INSERT INTO EDICION (
+LIBRO_ID,
+EDITORIAL_ID,
+NUM_EDICION,
+FECHA_LANZAMIENTO
+)
+
+SELECT L.ID, E.ID, 1, L.FECHA_PUBLICACION
+
+FROM LIBRO L, EDITORIAL E
+
+WHERE L.TITULO='La sombra del viento'
+AND E.NOMBRE='Editorial Alfaguara'
+
+
+INSERT INTO EDICION (
+LIBRO_ID,
+EDITORIAL_ID,
+NUM_EDICION,
+FECHA_LANZAMIENTO
+)
+
+SELECT L.ID, E.ID, 1, L.FECHA_PUBLICACION
+
+FROM LIBRO L, EDITORIAL E
+
+WHERE L.TITULO='Crimen y castigo'
+AND E.NOMBRE='Editorial Studios';
+
+
+
+INSERT INTO EDICION (
+LIBRO_ID,
+EDITORIAL_ID,
+NUM_EDICION,
+FECHA_LANZAMIENTO
+)
+
+SELECT L.ID, E.ID, 1, L.FECHA_PUBLICACION
+
+FROM LIBRO L, EDITORIAL E
+
+WHERE L.TITULO='Los hermanos Karamazov'
+AND E.NOMBRE='Editorial Studios';
+
+
+INSERT INTO EJEMPLAR (EDICION_ID,CODIGO_BARRAS,UBICACION) SELECT
+
+ID,
+
+'LIB-' || ID,
+
+'Estante A'
+
+FROM EDICION;
+
+
+INSERT INTO USUARIO (NOMBRE,EMAIL,TELEFONO,TIPO) VALUES
+
+('Juan Pérez','juan@email.com','4921111111','alumno'),
+('María López','maria@email.com','4922222222','docente'),
+('Carlos Ruiz', 'carlos.ruiz@email.com', '4923333333', 'alumno'),
+('Ana García', 'ana.garcia@email.com', '4924444444', 'docente'),
+('Luis Hernández', 'l.hernandez@email.com', '4925555555', 'alumno'),
+('Elena Torres', 'etorres@email.com', '4926666666', 'docente'),
+('Diego Martínez', 'diego.mtz@email.com', '4927777777', 'alumno'),
+('Sofía Castro', 'scastro@email.com', '4928888888', 'alumno'),
+('Ricardo Morales', 'rmorales@email.com', '4929999999', 'docente'),
+('Lucía Méndez', 'lucia.mendez@email.com', '4920000000', 'alumno');
+
+
+INSERT INTO PRESTAMO (USUARIO_ID,OBSERVACIONES) SELECT
+
+U.ID,
+'Préstamo inicial'
+FROM USUARIO U
+
+WHERE U.NOMBRE='Juan Pérez';
+
+
+INSERT INTO PRESTAMO_ITEM (PRESTAMO_ID,EJEMPLAR_ID,FECHA_VENCIMIENTO) SELECT
+
+P.ID,
+E.ID,
+DATE('now','+7 day')
+
+FROM PRESTAMO P, EJEMPLAR E
+LIMIT 1;
+
+
+INSERT INTO RESERVA (USUARIO_ID,LIBRO_ID,EXPIRA_EN) SELECT
+
+U.ID,
+L.ID,
+DATE('now','+2 day')
+
+FROM USUARIO U, LIBRO L
+
+WHERE U.NOMBRE='Juan Pérez'
+AND L.TITULO='La sombra del viento';
+
+INSERT INTO RESERVA (USUARIO_ID,LIBRO_ID,EXPIRA_EN) SELECT
+
+U.ID,
+L.ID,
+DATE('now','+8 day')
+
+FROM USUARIO U, LIBRO L
+
+WHERE U.NOMBRE='Ana García'
+AND L.TITULO='La casa de los espíritus';
+
+INSERT INTO RESERVA (USUARIO_ID,LIBRO_ID,EXPIRA_EN) SELECT
+
+U.ID,
+L.ID,
+DATE('now','+9 day')
+
+FROM USUARIO U, LIBRO L
+
+WHERE U.NOMBRE='Luis Hernández'
+AND L.TITULO='Largo pétalo de mar';
+
+INSERT INTO RESERVA (USUARIO_ID,LIBRO_ID,EXPIRA_EN) SELECT
+
+U.ID,
+L.ID,
+DATE('now','+1 day')
+
+FROM USUARIO U, LIBRO L
+
+WHERE U.NOMBRE='Sofía Castro'
+AND L.TITULO='Crimen y castigo';
+
+INSERT INTO RESERVA (USUARIO_ID,LIBRO_ID,EXPIRA_EN) SELECT
+
+U.ID,
+L.ID,
+DATE('now','+4 day')
+
+FROM USUARIO U, LIBRO L
+
+WHERE U.NOMBRE='María López'
+AND L.TITULO='Rayuela';
+
+COMMIT

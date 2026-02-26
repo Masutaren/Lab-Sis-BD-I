@@ -1,0 +1,104 @@
+PRAGMA foreign_keys = ON
+
+ALTER TABLE Producto RENAME TO Producto_OLD;
+ALTER TABLE Cliente RENAME TO Cliente_OLD;
+ALTER TABLE Proveedor RENAME TO Proveedor_OLD;
+ALTER TABLE Empleado RENAME TO Empleado_OLD;
+ALTER TABLE Categoria RENAME TO Categoria_OLD;
+
+ALTER TABLE Ventas RENAME TO Ventas_OLD;
+ALTER TABLE Compras RENAME TO Compras_OLD;
+ALTER TABLE Area RENAME TO Area_OLD;
+
+
+CREATE TABLE Producto (
+    id_producto   INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre        TEXT NOT NULL,
+    descripcion   TEXT,
+    sku           TEXT UNIQUE,
+    stock_minimo  INTEGER DEFAULT 1,
+    unidad_medida TEXT DEFAULT 'pieza',
+    created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+
+CREATE TABLE Precio_Historial (
+    id_precio    INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_producto  INTEGER,
+    precio_venta REAL NOT NULL,
+    fecha_inicio DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto)
+)
+
+CREATE TABLE Categoria (
+    id_categoria INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre       TEXT NOT NULL UNIQUE,
+    descripcion  TEXT
+)
+
+CREATE TABLE Cliente (
+    id_cliente   INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre       TEXT NOT NULL,
+    rfc     TEXT,
+    telefono     TEXT,
+    email        TEXT UNIQUE,
+    puntos INTEGER DEFAULT 0
+);
+
+CREATE TABLE Proveedor (
+    id_proveedor INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre_contacto TEXT,
+    empresa      TEXT NOT NULL,
+    telefono     TEXT,
+    email        TEXT,
+    sitio_web    TEXT
+);
+
+CREATE TABLE Venta_Detalle (
+    id_venta    INTEGER,
+    id_producto INTEGER,
+    cantidad    INTEGER NOT NULL,
+    precio_unitario REAL NOT NULL,
+    subtotal    REAL AS (cantidad * precio_unitario),
+    PRIMARY KEY (id_venta, id_producto),
+    FOREIGN KEY (id_venta) REFERENCES Venta_Cabecera(id_venta),
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto)
+)
+
+
+INSERT INTO Producto (id_producto, nombre, descripcion)
+SELECT id_producto, nombre, detalle FROM Producto_OLD;
+
+INSERT INTO Precio_Historial (id_producto, precio_venta)
+SELECT id_producto, precio FROM Producto_OLD WHERE precio IS NOT NULL;
+
+INSERT INTO Categoria (id_categoria, nombre, descripcion)
+SELECT id_categoria, nombre, detalle FROM Categoria_OLD;
+
+INSERT INTO Cliente (id_cliente, nombre, telefono, email)
+SELECT id_cliente, nombre, telefono, email FROM Cliente_OLD;
+
+
+CREATE TABLE Producto_Categoria (
+    id_producto INTEGER,
+    id_categoria INTEGER,
+    PRIMARY KEY (id_producto, id_categoria),
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
+    FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria)
+);
+
+INSERT INTO Producto_Categoria (id_producto, id_categoria)
+SELECT id_producto, id_categoria FROM Area_OLD;
+
+
+DROP TABLE Producto_OLD;
+DROP TABLE Cliente_OLD;
+DROP TABLE Proveedor_OLD;
+DROP TABLE Empleado_OLD;
+DROP TABLE Categoria_OLD;
+DROP TABLE Ventas_OLD;
+DROP TABLE Compras_OLD;
+DROP TABLE Area_OLD;
+
+PRAGMA foreign_keys = ON;
+PRAGMA foreign_key_check;
