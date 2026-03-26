@@ -5,6 +5,8 @@ function apiRouter() {
   const router = express.Router();
   const db = openDb();
 
+  db.pragma('foreign_keys = ON');
+
   // Helpers
   const toInt = (v, d = 0) => {
     const n = Number(v);
@@ -72,11 +74,23 @@ function apiRouter() {
   });
 
   router.delete("/autores/:id", (req, res) => {
-    const id = toInt(req.params.id, 0);
-    if (!id) return res.status(400).json({ ok: false, message: "ID inválido." });
+    const autorId = toInt(req.params.id, 0);
+    if (!autorId) return res.status(400).json({ ok: false, message: "ID inválido." });
 
-    const info = db.prepare(`DELETE FROM AUTOR WHERE ID=?;`).run(id);
-    res.json({ ok: true, changes: info.changes });
+    try {
+      const deleteAutorTx = db.transaction(() => {
+
+        db.prepare(`DELETE FROM LIBRO_AUTOR WHERE AUTOR_ID = ?`).run(autorId);
+
+        return db.prepare(`DELETE FROM AUTOR WHERE ID = ?`).run(autorId);
+      });
+
+      const info = deleteAutorTx();
+      res.json({ ok: true, changes: info.changes });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ ok: false, message: "Error al eliminar autor: " + error.message });
+    }
   });
 
   // =========================
@@ -136,10 +150,13 @@ function apiRouter() {
 
   router.delete("/editoriales/:id", (req, res) => {
     const id = toInt(req.params.id, 0);
-    if (!id) return res.status(400).json({ ok: false, message: "ID inválido." });
-
-    const info = db.prepare(`DELETE FROM EDITORIAL WHERE ID=?;`).run(id);
-    res.json({ ok: true, changes: info.changes });
+    try {
+      db.pragma('foreign_keys = ON');
+      const info = db.prepare(`DELETE FROM EDITORIAL WHERE ID = ?`).run(id);
+      res.json({ ok: true, changes: info.changes });
+    } catch (error) {
+      res.status(500).json({ ok: false, message: error.message });
+    }
   });
 
   // =========================
@@ -369,13 +386,18 @@ function apiRouter() {
 
   router.delete("/libros/:id", (req, res) => {
     const id = toInt(req.params.id, 0);
-    if (!id) return res.status(400).json({ ok: false, message: "ID inválido." });
+    try {
+      db.pragma('foreign_keys = ON');
 
-    const info = db.prepare(`DELETE FROM LIBRO WHERE ID=?;`).run(id);
-    res.json({ ok: true, changes: info.changes });
+      const info = db.prepare(`DELETE FROM LIBRO WHERE ID = ?`).run(id);
+      
+      res.json({ ok: true, changes: info.changes });
+    } catch (error) {
+      console.error("Error SQL:", error.message);
+      res.status(500).json({ ok: false, message: "Error: " + error.message });
+    }
   });
 
-  // Asignar autores a un libro (reemplaza lista completa)
   router.put("/libros/:id/autores", (req, res) => {
     const libroId = toInt(req.params.id, 0);
     const list = Array.isArray(req.body?.autores) ? req.body.autores : [];
@@ -478,10 +500,13 @@ function apiRouter() {
 
   router.delete("/ediciones/:id", (req, res) => {
     const id = toInt(req.params.id, 0);
-    if (!id) return res.status(400).json({ ok: false, message: "ID inválido." });
-
-    const info = db.prepare(`DELETE FROM EDICION WHERE ID=?;`).run(id);
-    res.json({ ok: true, changes: info.changes });
+    try {
+      db.pragma('foreign_keys = ON');
+      const info = db.prepare(`DELETE FROM EDICION WHERE ID = ?`).run(id);
+      res.json({ ok: true, changes: info.changes });
+    } catch (error) {
+      res.status(500).json({ ok: false, message: error.message });
+    }
   });
 
   // =========================
